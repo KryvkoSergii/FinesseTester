@@ -1,12 +1,12 @@
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import ua.com.smiddle.core.util.util.FinesseForm;
 
-import java.util.Arrays;
 
 /**
  * Created by srg on 14.09.16.
@@ -20,12 +20,8 @@ import java.util.Arrays;
 public class Application {
 
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(Application.class, args);
-        String[] beanNames = ctx.getBeanDefinitionNames();
-        Arrays.sort(beanNames);
-        for (String beanName : beanNames) {
-            System.out.println(beanName);
-        }
+        ApplicationContext ctx = new SpringApplicationBuilder(Application.class).headless(false).run(args);
+//        FinesseForm beanNames = ctx.getBean(FinesseForm.class);
     }
 
 }

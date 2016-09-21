@@ -1,7 +1,9 @@
-package ua.com.smiddle.core.util.model;
+package ua.com.smiddle.core.util.util;
 
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Component;
+import ua.com.smiddle.core.util.model.Action;
+import ua.com.smiddle.core.util.model.Request;
 
 import javax.annotation.PostConstruct;
 
@@ -12,6 +14,7 @@ import javax.annotation.PostConstruct;
 @Description("Contains logged client state and credentials")
 public class State extends Request {
     private String password;
+    private String token;
 
 
     //Constructors
@@ -29,6 +32,13 @@ public class State extends Request {
         this.password = password;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     //Method
     @Override

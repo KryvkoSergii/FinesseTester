@@ -5,13 +5,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ua.com.smiddle.core.util.model.State;
+import ua.com.smiddle.core.util.model.Action;
+import ua.com.smiddle.core.util.model.Request;
+import ua.com.smiddle.core.util.util.State;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Base64;
-import java.util.Scanner;
 
 /**
  * Created by srg on 21.09.16.
@@ -25,11 +26,15 @@ public class Sender {
     @Qualifier("State")
     private State state;
 
-    public void login(Object request) throws Exception {
-        makeRequest(state.getLoginId(), state.getPassword(), "/login", request);
+    public void login() throws Exception {
+        Request r = new Request();
+        r.setLoginId(state.getLoginId());
+        r.setExtension(state.getExtension());
+        r.setAction(Action.LOGIN);
+        makeRequest(state.getLoginId(), state.getPassword(), "/login", r);
     }
 
-    public void change_state(String loginId, String password,Object request) throws Exception {
+    public void change_state(Object request) throws Exception {
         makeRequest(state.getLoginId(), state.getPassword(), "/change_state", request);
     }
 
@@ -40,7 +45,7 @@ public class Sender {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Cache-Control", "no-cache");
         connection.setRequestProperty("Accept", "*/*");
-        addAuth(connection,loginId,password);
+        addAuth(connection, loginId, password);
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.connect();
@@ -60,7 +65,13 @@ public class Sender {
     }
 
     private void addAuth(HttpURLConnection connection, String loginId, String pass) {
-        byte[] inBytes = (loginId.concat(":").concat(pass)).getBytes(Charset.forName("UTF-8"));
-        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encode(inBytes));
+        if (state.getToken() != null) {
+            connection.setRequestProperty("Authorization", state.getToken());
+        } else {
+            byte[] inBytes = (loginId.concat(":").concat(pass)).getBytes(Charset.forName("UTF-8"));
+            String token = "Basic " + Base64.getEncoder().encode(inBytes);
+            connection.setRequestProperty("Authorization", token);
+            state.setToken(token);
+        }
     }
 }
