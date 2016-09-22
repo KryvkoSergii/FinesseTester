@@ -21,7 +21,6 @@ public class Application {
 
     public static void main(String[] args) {
         ApplicationContext ctx = new SpringApplicationBuilder(Application.class).headless(false).run(args);
-//        FinesseForm beanNames = ctx.getBean(FinesseForm.class);
     }
 
 }

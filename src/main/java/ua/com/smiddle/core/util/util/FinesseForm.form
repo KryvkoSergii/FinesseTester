@@ -21,11 +21,29 @@
               <text value="LOGIN"/>
             </properties>
           </component>
-          <component id="e7731" class="javax.swing.JButton" binding="btnAction">
+          <component id="48b7f" class="javax.swing.JButton" binding="btnLogout">
+            <constraints/>
+            <properties>
+              <text value="LOGOUT"/>
+            </properties>
+          </component>
+          <component id="e7731" class="javax.swing.JButton" binding="btnCall">
             <constraints/>
             <properties>
               <enabled value="false"/>
               <text value="CALL"/>
+            </properties>
+          </component>
+          <component id="4daab" class="javax.swing.JButton" binding="btnAnswer">
+            <constraints/>
+            <properties>
+              <text value="ANSWER"/>
+            </properties>
+          </component>
+          <component id="bdb19" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="State:"/>
             </properties>
           </component>
           <grid id="4a751" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

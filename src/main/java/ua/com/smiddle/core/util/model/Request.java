@@ -13,6 +13,7 @@ public class Request {
     private String extension;
     private String loginId;
     private Action action;
+    private String password;
 
 
     //Constructor
@@ -45,6 +46,13 @@ public class Request {
         this.action = action;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     //Methods
     @Override
