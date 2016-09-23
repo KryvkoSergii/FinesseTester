@@ -1,10 +1,6 @@
 package ua.com.smiddle.core.util.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Created by srg on 20.09.16.
@@ -12,8 +8,13 @@ import java.util.List;
 public class Request {
     private String extension;
     private String loginId;
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Action action;
     private String password;
+    //cодержит целевой номер телефона при выполении действия (позвонить)
+    private String targetAddress;
+    //содержит ид диалога, при выполении действия ("Action.ANSWER")
+    private String dialogId;
 
 
     //Constructor
@@ -54,6 +55,14 @@ public class Request {
         this.password = password;
     }
 
+    public String getTargetAddress() {
+        return targetAddress;
+    }
+
+    public void setTargetAddress(String targetAddress) {
+        this.targetAddress = targetAddress;
+    }
+
     //Methods
     @Override
     public String toString() {
@@ -61,6 +70,7 @@ public class Request {
         sb.append("extension='").append(extension).append('\'');
         sb.append(", loginId='").append(loginId).append('\'');
         sb.append(", action=").append(action);
+        sb.append(", targetAddress=").append(targetAddress);
         sb.append('}');
         return sb.toString();
     }

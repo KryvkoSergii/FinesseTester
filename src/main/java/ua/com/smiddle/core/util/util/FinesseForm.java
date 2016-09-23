@@ -45,7 +45,10 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JPanel contentPane;
     private JButton btnLogout;
     private JButton btnAnswer;
+    private JLabel lblState;
 
+
+    //Constructors
     public FinesseForm() {
         super();
         //== declaration ======
@@ -54,7 +57,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("FINESSE CONNECTOR");
         setVisible(true);
-        setSize(550, 300);
+        setSize(650, 300);
         setInitUnknown();
         //== EVENT LISTENERS ===
         stateHandler = new PropertyChangeSupport(this);
@@ -64,7 +67,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
             @Override
             public void actionPerformed(ActionEvent e) {
                 loginDialog.setVisible(true);
-                stateHandler.firePropertyChange("state", state.getAction(), Action.LOGIN);
+                stateHandler.firePropertyChange("set_state", state.getAction(), Action.LOGIN);
             }
         });
         comboBox1.addActionListener(new ActionListener() {
@@ -73,10 +76,10 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                 int choice = ((JComboBox) e.getSource()).getSelectedIndex();
                 switch (choice) {
                     case 0:
-                        stateHandler.firePropertyChange("state", state.getAction(), Action.NOT_READY);
+                        stateHandler.firePropertyChange("set_state", state.getAction(), Action.NOT_READY);
                         break;
                     case 1:
-                        stateHandler.firePropertyChange("state", state.getAction(), Action.READY);
+                        stateHandler.firePropertyChange("set_state", state.getAction(), Action.READY);
                         break;
                     default:
 //                        JOptionPane.showMessageDialog(null, "UNKNOWN STATE", String.valueOf("STATE CODE " + choice), JOptionPane.WARNING_MESSAGE);
@@ -87,30 +90,29 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnLogout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                stateHandler.firePropertyChange("state", state.getAction(), Action.LOGOUT);
+                stateHandler.firePropertyChange("set_state", state.getAction(), Action.LOGOUT);
             }
         });
     }
 
+
+    //Methods
     private void sendLOGIN() {
         try {
             sender.login();
         } catch (Exception e) {
-            addLog(e.getMessage());
+            addException(e.getMessage());
             return;
         }
-        addLog("Logging with " + state.toString());
     }
 
     private void sendChangeState(Action action) {
         try {
             sender.change_state(action);
         } catch (Exception e) {
-            e.printStackTrace();
+            addException(e.getMessage());
         }
-        addLog("Setting " + state.toString());
     }
-
 
     @Override
     public void run(String... strings) throws Exception {
@@ -138,6 +140,15 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         comboBox1.setEnabled(false);
     }
 
+    public void changePropertyTo(Action action) {
+        stateHandler.firePropertyChange("event_state", state.getAction(), action);
+    }
+
+
+    //Listeners
+    /**
+     * слушатель, получающий события на отправку команд на изменение состояния
+     */
     public class StateListener implements PropertyChangeListener {
         public StateListener() {
             System.out.println(this.getClass().getName() + " started");
@@ -145,7 +156,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if (evt.getPropertyName().equals("state")) {
+            if (evt.getPropertyName().equals("set_state")) {
                 if (evt.getNewValue() == Action.LOGOUT) {
                     sendChangeState((Action) evt.getNewValue());
                     btnLogout.setEnabled(true);
@@ -175,6 +186,9 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                     btnCall.setEnabled(true);
                     comboBox1.setEnabled(true);
                 }
+            } else if (evt.getPropertyName().equals("event_state")) {
+                state.setAction((Action) evt.getNewValue());
+                lblState.setText(state.getAction().toString());
             }
         }
     }

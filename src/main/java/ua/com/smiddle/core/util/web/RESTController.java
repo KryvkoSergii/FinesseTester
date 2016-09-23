@@ -7,12 +7,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.ContextLoader;
+import ua.com.smiddle.core.util.model.Event;
 import ua.com.smiddle.core.util.model.Header;
 import ua.com.smiddle.core.util.model.Request;
 import ua.com.smiddle.core.util.model.ResponseCode;
 import ua.com.smiddle.core.util.util.FinesseForm;
+import ua.com.smiddle.core.util.util.State;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.beans.PropertyChangeSupport;
 
 @RestController("RESTController")
 @RequestMapping("/api")
@@ -21,10 +25,12 @@ public class RESTController {
     @Qualifier("FinesseForm")
     private FinesseForm finesseForm;
 
+
     @RequestMapping(value = "/event", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8", produces = "application/json; charset=UTF-8")
-    public Header event(@RequestBody Request request, HttpServletRequest HTTPrequest) {
+    public Header event(@RequestBody Event request, HttpServletRequest HTTPrequest) {
         try {
             finesseForm.addLog("got Event " + request.toString());
+            finesseForm.changePropertyTo(request.getAction());
             return new Header(ResponseCode.SUCCESSFUL);
         } catch (Exception e) {
             e.printStackTrace();
