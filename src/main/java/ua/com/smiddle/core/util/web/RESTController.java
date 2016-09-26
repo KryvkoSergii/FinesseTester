@@ -6,18 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.ContextLoader;
-import ua.com.smiddle.core.util.model.Header;
-import ua.com.smiddle.core.util.model.ResponseCode;
 import ua.com.smiddle.core.util.model.interfaces.Event;
-import ua.com.smiddle.core.util.model.interfaces.OutboundDialog;
 import ua.com.smiddle.core.util.util.FinesseForm;
-import ua.com.smiddle.core.util.util.State;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
 @RestController("RESTController")
@@ -35,9 +28,9 @@ public class RESTController {
             if (request.getApiError() != null) {
                 finesseForm.showError(request.getApiError());
             } else if (request.getState() != null) {
-                finesseForm.changePropertyTo(request.getState());
+                finesseForm.changeAgentState(request.getState());
             } else if (request.getDialog()!=null){
-                finesseForm.setDialod(request.getDialog());
+                finesseForm.setDialog(request.getDialog());
             }
             HTTPresponce.setStatus(HttpServletResponse.SC_ACCEPTED);
         } catch (Exception e) {

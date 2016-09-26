@@ -36,27 +36,22 @@ public class Sender {
     private BufferedWriter bw;
 
     public void login() throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null);
-//        r.setLoginId(state.getLoginId());
-//        r.setExtension(state.getExtension());
-//        r.setAction(Action.LOGIN);
-//        r.setPassword(state.getPassword());
-
+        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null,null);
         makeRequest(state.getLoginId(), state.getPassword(), "/login", r);
     }
 
     public void change_state(Object request) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null);
-//        r.setLoginId(state.getLoginId());
-//        r.setExtension(state.getExtension());
-//        r.setAction((Action) request);
-//        r.setPassword(state.getPassword());
-
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null,null);
         makeRequest(state.getLoginId(), state.getPassword(), "/change_state", r);
     }
 
     public void sendAction(Object request, String dialogId) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null);
+        makeRequest(state.getLoginId(), state.getPassword(), "/do_action", r);
+    }
+
+    public void makeCall(Object request, String toAddress) throws Exception {
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress);
         makeRequest(state.getLoginId(), state.getPassword(), "/do_action", r);
     }
 

@@ -17,20 +17,23 @@ public class Request {
     private Action action;
     //пароль агента
     private String password;
-    //
+    //идентификатор диалога
     private String dialogId;
+    //целевой телефон при исходящем звонке
+    private String toAddress;
 
 
     //Constructor
     public Request() {
     }
 
-    public Request(String loginId, String extension, Action action, String password, String dialogId) {
+    public Request(String loginId, String extension, Action action, String password, String dialogId, String toAddress) {
         this.loginId = loginId;
         this.extension = extension;
         this.action = action;
         this.password = password;
         this.dialogId = dialogId;
+        this.toAddress = toAddress;
     }
 
 
@@ -75,6 +78,14 @@ public class Request {
         this.dialogId = dialogId;
     }
 
+    public String getToAddress() {
+        return toAddress;
+    }
+
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress;
+    }
+
 
     //Methods
     @Override
@@ -85,6 +96,7 @@ public class Request {
         sb.append(", action=").append(action);
         sb.append(", password='").append(password).append('\'');
         sb.append(", dialogId='").append(dialogId).append('\'');
+        sb.append(", toAddress='").append(toAddress).append('\'');
         sb.append('}');
         return sb.toString();
     }

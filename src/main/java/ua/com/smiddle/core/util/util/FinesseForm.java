@@ -64,7 +64,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         setInitUnknown();
         //== EVENT LISTENERS ===
         stateHandler = new PropertyChangeSupport(this);
-        stateHandler.addPropertyChangeListener(new StateListener());
+        stateHandler.addPropertyChangeListener(new EventListener());
 
         btnLogin.addActionListener(new AbstractAction() {
             @Override
@@ -107,6 +107,25 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                 stateHandler.firePropertyChange("do_action", null, Action.DROP);
             }
         });
+        btnCall.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String phoneNumber = JOptionPane.showInputDialog(null, "Enter phone number", "MAKE A CALL", JOptionPane.INFORMATION_MESSAGE);
+                stateHandler.firePropertyChange("do_action", null, new MakeCall(Action.MAKE_CALL, phoneNumber));
+            }
+        });
+        btnHold.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stateHandler.firePropertyChange("do_action", null, Action.HOLD);
+            }
+        });
+        btnUnhold.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stateHandler.firePropertyChange("do_action", null, Action.UNHOLD);
+            }
+        });
     }
 
 
@@ -131,6 +150,14 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private void sendDialog(Action action, String dialogId) {
         try {
             sender.sendAction(action, dialogId);
+        } catch (Exception e) {
+            addException(e.getMessage());
+        }
+    }
+
+    private void sendMakeCall(Action action, String toAddress) {
+        try {
+            sender.makeCall(action, toAddress);
         } catch (Exception e) {
             addException(e.getMessage());
         }
@@ -166,7 +193,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnUnhold.setEnabled(false);
     }
 
-    public void changePropertyTo(Action action) {
+    public void changeAgentState(Action action) {
         stateHandler.firePropertyChange("event_state", state.getAction(), action);
     }
 
@@ -174,11 +201,18 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         stateHandler.firePropertyChange("event_error", null, error);
     }
 
-    public void setDialod(OutboundDialog dialog) {
-        if (state.getCallDialog() == null) {
-            JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
-            state.setCallDialog(dialog.getId());
+    public void setDialog(OutboundDialog dialog) {
+        if (state.getDialogId() == null) {
+            state.setDialogId(dialog.getId());
         }
+        //incoming call
+        if (!state.getDialogId().equals(dialog.getId())) {
+            if (state.getExtension().equals(dialog.getToAddress())) {
+                JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
+            }
+            state.setDialogId(dialog.getId());
+        }
+
     }
 
 
@@ -187,57 +221,109 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     /**
      * слушатель, получающий события на отправку команд на изменение состояния
      */
-    public class StateListener implements PropertyChangeListener {
-        public StateListener() {
+    public class EventListener implements PropertyChangeListener {
+        public EventListener() {
             System.out.println(this.getClass().getName() + " started");
         }
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            if (evt.getPropertyName().equals("set_state")) {
-                if (evt.getNewValue() == Action.LOGOUT) {
-                    sendChangeState((Action) evt.getNewValue());
-                    btnLogout.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    btnAnswer.setEnabled(true);
-                    btnCall.setEnabled(true);
-                    comboBox1.setEnabled(true);
-                } else if (evt.getNewValue() == Action.LOGIN) {
-                    sendLOGIN();
-                    btnLogout.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    btnAnswer.setEnabled(true);
-                    btnCall.setEnabled(true);
-                    comboBox1.setEnabled(true);
-                } else if (evt.getNewValue() == Action.NOT_READY) {
-                    sendChangeState((Action) evt.getNewValue());
-                    btnLogout.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    btnAnswer.setEnabled(true);
-                    btnCall.setEnabled(true);
-                    comboBox1.setEnabled(true);
-                } else if (evt.getNewValue() == Action.READY) {
-                    sendChangeState((Action) evt.getNewValue());
-                    btnLogout.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    btnAnswer.setEnabled(true);
-                    btnCall.setEnabled(true);
-                    comboBox1.setEnabled(true);
+            try {
+                if (evt.getPropertyName().equals("set_state")) {
+                    if (evt.getNewValue() == Action.LOGOUT) {
+                        sendChangeState((Action) evt.getNewValue());
+                        btnLogout.setEnabled(true);
+                        btnLogin.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnCall.setEnabled(true);
+                        comboBox1.setEnabled(true);
+                    } else if (evt.getNewValue() == Action.LOGIN) {
+                        sendLOGIN();
+                        btnLogout.setEnabled(true);
+                        btnLogin.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnCall.setEnabled(true);
+                        comboBox1.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnDrop.setEnabled(true);
+                        btnHold.setEnabled(true);
+                        btnUnhold.setEnabled(true);
+                    } else if (evt.getNewValue() == Action.NOT_READY) {
+                        sendChangeState((Action) evt.getNewValue());
+                        btnLogout.setEnabled(true);
+                        btnLogin.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnCall.setEnabled(true);
+                        comboBox1.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnDrop.setEnabled(true);
+                        btnHold.setEnabled(true);
+                        btnUnhold.setEnabled(true);
+                    } else if (evt.getNewValue() == Action.READY) {
+                        sendChangeState((Action) evt.getNewValue());
+                        btnLogout.setEnabled(true);
+                        btnLogin.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnCall.setEnabled(true);
+                        comboBox1.setEnabled(true);
+                        btnAnswer.setEnabled(true);
+                        btnDrop.setEnabled(true);
+                        btnHold.setEnabled(true);
+                        btnUnhold.setEnabled(true);
+                    }
+                } else if (evt.getPropertyName().equals("event_state")) {
+                    state.setAction((Action) evt.getNewValue());
+                    lblState.setText(state.getAction().toString());
+                } else if (evt.getPropertyName().equals("event_error")) {
+                    ApiError error = (ApiError) evt.getNewValue();
+                    JOptionPane.showMessageDialog(null, error.getErrorMessage() + " " + error.getErrorType(),
+                            "ERROR", JOptionPane.ERROR_MESSAGE);
+                } else if (evt.getPropertyName().equals("do_action")) {
+                    if (evt.getNewValue() instanceof Action && (evt.getNewValue() == Action.ANSWER || evt.getNewValue() == Action.DROP)) {
+                        sendDialog((Action) evt.getNewValue(), state.getDialogId());
+                    } else if (evt.getNewValue() instanceof MakeCall && ((MakeCall) evt.getNewValue()).getAction() == Action.MAKE_CALL) {
+                        sendMakeCall(((MakeCall) evt.getNewValue()).getAction(), ((MakeCall) evt.getNewValue()).toAddress);
+                    } else if (evt.getNewValue() instanceof Action && (evt.getNewValue() == Action.HOLD || evt.getNewValue() == Action.UNHOLD)) {
+                        sendDialog((Action) evt.getNewValue(), state.getDialogId());
+                    }
                 }
-            } else if (evt.getPropertyName().equals("event_state")) {
-                state.setAction((Action) evt.getNewValue());
-                lblState.setText(state.getAction().toString());
-            } else if (evt.getPropertyName().equals("event_error")) {
-                ApiError error = (ApiError) evt.getNewValue();
-                JOptionPane.showMessageDialog(null, error.getErrorMessage() + " " + error.getErrorType(),
-                        "ERROR", JOptionPane.ERROR_MESSAGE);
-            } else if (evt.getPropertyName().equals("do_action")) {
-                if (evt.getNewValue() == Action.ANSWER) {
-                    sendDialog((Action) evt.getNewValue(), state.getCallDialog());
-                } else if (evt.getNewValue() == Action.DROP) {
-                    sendDialog((Action) evt.getNewValue(), state.getCallDialog());
-                }
+            } catch (Exception e) {
+                addException("EventListener throw EXCEPTION=" + e.getMessage());
             }
+        }
+    }
+
+
+    //Inner classes
+    class MakeCall {
+        private Action action;
+        private String toAddress;
+
+        //Constructors
+        public MakeCall() {
+        }
+
+        public MakeCall(Action action, String toAddress) {
+            this.action = action;
+            this.toAddress = toAddress;
+        }
+
+
+        //Getters and setters
+        public Action getAction() {
+            return action;
+        }
+
+        public void setAction(Action action) {
+            this.action = action;
+        }
+
+        public String getToAddress() {
+            return toAddress;
+        }
+
+        public void setToAddress(String toAddress) {
+            this.toAddress = toAddress;
         }
     }
 }

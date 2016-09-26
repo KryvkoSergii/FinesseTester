@@ -16,7 +16,6 @@ import javax.annotation.PostConstruct;
 public class State extends Request {
     private String password;
     private String token;
-    private String callDialog;
 
 
     //Constructors
@@ -42,14 +41,6 @@ public class State extends Request {
         this.token = token;
     }
 
-    public String getCallDialog() {
-        return callDialog;
-    }
-
-    public void setCallDialog(String callDialog) {
-        this.callDialog = callDialog;
-    }
-
 
     //Method
     @Override
@@ -58,7 +49,6 @@ public class State extends Request {
         sb.append(super.toString()).append(",");
         sb.append("password='").append(password).append('\'');
         sb.append(", token='").append(token).append('\'');
-        sb.append(", callDialog='").append(callDialog).append('\'');
         sb.append('}');
         return sb.toString();
     }
