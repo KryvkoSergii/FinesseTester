@@ -5,11 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import ua.com.smiddle.core.util.model.Action;
-import ua.com.smiddle.core.util.model.Request;
+import ua.com.smiddle.core.util.model.interfaces.Action;
+import ua.com.smiddle.core.util.model.interfaces.Request;
 import ua.com.smiddle.core.util.util.FinesseForm;
 import ua.com.smiddle.core.util.util.JacksonUtil;
-import ua.com.smiddle.core.util.util.Login;
 import ua.com.smiddle.core.util.util.State;
 
 import java.beans.PropertyChangeSupport;
@@ -37,23 +36,28 @@ public class Sender {
     private BufferedWriter bw;
 
     public void login() throws Exception {
-        Request r = new Request();
-        r.setLoginId(state.getLoginId());
-        r.setExtension(state.getExtension());
-        r.setAction(Action.LOGIN);
-        r.setPassword(state.getPassword());
+        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null);
+//        r.setLoginId(state.getLoginId());
+//        r.setExtension(state.getExtension());
+//        r.setAction(Action.LOGIN);
+//        r.setPassword(state.getPassword());
 
         makeRequest(state.getLoginId(), state.getPassword(), "/login", r);
     }
 
     public void change_state(Object request) throws Exception {
-        Request r = new Request();
-        r.setLoginId(state.getLoginId());
-        r.setExtension(state.getExtension());
-        r.setAction((Action) request);
-        r.setPassword(state.getPassword());
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null);
+//        r.setLoginId(state.getLoginId());
+//        r.setExtension(state.getExtension());
+//        r.setAction((Action) request);
+//        r.setPassword(state.getPassword());
 
         makeRequest(state.getLoginId(), state.getPassword(), "/change_state", r);
+    }
+
+    public void sendAction(Object request, String dialogId) throws Exception {
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId);
+        makeRequest(state.getLoginId(), state.getPassword(), "/do_action", r);
     }
 
     private void makeRequest(String loginId, String password, String actionURL, Object request) throws Exception {
@@ -75,7 +79,7 @@ public class Sender {
         bw.flush();
 
         if (connection.getResponseCode() != 202) {
-            throw new Exception("Respose code " + connection.getResponseCode());
+            throw new Exception("Response: code=" + connection.getResponseCode() + ", message=" + connection.getResponseMessage());
         }
         connection.disconnect();
     }

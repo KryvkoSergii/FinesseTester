@@ -2,8 +2,9 @@ package ua.com.smiddle.core.util.util;
 
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Component;
-import ua.com.smiddle.core.util.model.Action;
-import ua.com.smiddle.core.util.model.Request;
+import ua.com.smiddle.core.util.model.interfaces.Action;
+import ua.com.smiddle.core.util.model.interfaces.Request;
+
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
 public class State extends Request {
     private String password;
     private String token;
+    private String callDialog;
 
 
     //Constructors
@@ -40,12 +42,23 @@ public class State extends Request {
         this.token = token;
     }
 
+    public String getCallDialog() {
+        return callDialog;
+    }
+
+    public void setCallDialog(String callDialog) {
+        this.callDialog = callDialog;
+    }
+
+
     //Method
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("State{");
         sb.append(super.toString()).append(",");
         sb.append("password='").append(password).append('\'');
+        sb.append(", token='").append(token).append('\'');
+        sb.append(", callDialog='").append(callDialog).append('\'');
         sb.append('}');
         return sb.toString();
     }

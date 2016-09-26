@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="664" height="196"/>
+      <xy x="20" y="20" width="726" height="196"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -15,69 +15,143 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="f459a" class="javax.swing.JButton" binding="btnLogin">
-            <constraints/>
-            <properties>
-              <text value="LOGIN"/>
-            </properties>
-          </component>
-          <component id="48b7f" class="javax.swing.JButton" binding="btnLogout">
-            <constraints/>
-            <properties>
-              <text value="LOGOUT"/>
-            </properties>
-          </component>
-          <component id="e7731" class="javax.swing.JButton" binding="btnCall">
-            <constraints/>
-            <properties>
-              <enabled value="false"/>
-              <text value="CALL"/>
-            </properties>
-          </component>
-          <component id="4daab" class="javax.swing.JButton" binding="btnAnswer">
-            <constraints/>
-            <properties>
-              <text value="ANSWER"/>
-            </properties>
-          </component>
-          <component id="bdb19" class="javax.swing.JLabel">
-            <constraints/>
-            <properties>
-              <text value="State:"/>
-            </properties>
-          </component>
-          <grid id="4a751" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="bd921" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints/>
             <properties/>
-            <border type="none"/>
+            <border type="line"/>
             <children>
-              <component id="afd6d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+              <component id="48b7f" class="javax.swing.JButton" binding="btnLogout">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
-                  <model>
-                    <item value="NOT_READY"/>
-                    <item value="READY"/>
-                  </model>
+                  <text value="LOGOUT"/>
+                </properties>
+              </component>
+              <component id="f459a" class="javax.swing.JButton" binding="btnLogin">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="LOGIN"/>
                 </properties>
               </component>
             </children>
           </grid>
-          <component id="bda49" class="javax.swing.JLabel">
+          <grid id="a660" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints/>
-            <properties>
-              <text value="Carrent state:"/>
-            </properties>
-          </component>
-          <component id="aff57" class="javax.swing.JLabel" binding="lblState">
+            <properties/>
+            <border type="line"/>
+            <children>
+              <component id="e7731" class="javax.swing.JButton" binding="btnCall">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <text value="CALL"/>
+                </properties>
+              </component>
+              <component id="4daab" class="javax.swing.JButton" binding="btnAnswer">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="ANSWER"/>
+                </properties>
+              </component>
+              <component id="4b620" class="javax.swing.JButton" binding="btnDrop">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="DROP"/>
+                </properties>
+              </component>
+              <component id="f24c1" class="javax.swing.JButton" binding="btnHold">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="HOLD"/>
+                </properties>
+              </component>
+              <component id="53037" class="javax.swing.JButton" binding="btnUnhold">
+                <constraints>
+                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="UNHOLD"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <grid id="a3e1" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints/>
-            <properties>
-              <text value="UNKNOWN"/>
-            </properties>
-          </component>
+            <properties/>
+            <border type="line"/>
+            <children>
+              <grid id="b7231" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="bda49" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Carrent state:"/>
+                    </properties>
+                  </component>
+                  <component id="aff57" class="javax.swing.JLabel" binding="lblState">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="UNKNOWN"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="47b64" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="bdb19" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="State:"/>
+                    </properties>
+                  </component>
+                  <component id="afd6d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <model>
+                        <item value="NOT_READY"/>
+                        <item value="READY"/>
+                      </model>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
         </children>
       </grid>
       <vspacer id="ed2d9">

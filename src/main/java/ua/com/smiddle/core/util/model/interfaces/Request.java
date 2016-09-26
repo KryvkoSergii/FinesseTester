@@ -1,24 +1,36 @@
-package ua.com.smiddle.core.util.model;
+package ua.com.smiddle.core.util.model.interfaces;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * Created by srg on 20.09.16.
+ * Предназначен для отправки запросов по JSON из TPS(thrid-party-system) -> SmiddleFinesseConnector.
+ *
+ * @author KSA
  */
 public class Request {
-    private String extension;
+    //Идентификтор агента
     private String loginId;
+    //Номер телефонного аппарата
+    private String extension;
+    //состояние агента
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Action action;
+    //пароль агента
     private String password;
-    //cодержит целевой номер телефона при выполении действия (позвонить)
-    private String targetAddress;
-    //содержит ид диалога, при выполении действия ("Action.ANSWER")
+    //
     private String dialogId;
 
 
     //Constructor
     public Request() {
+    }
+
+    public Request(String loginId, String extension, Action action, String password, String dialogId) {
+        this.loginId = loginId;
+        this.extension = extension;
+        this.action = action;
+        this.password = password;
+        this.dialogId = dialogId;
     }
 
 
@@ -55,22 +67,24 @@ public class Request {
         this.password = password;
     }
 
-    public String getTargetAddress() {
-        return targetAddress;
+    public String getDialogId() {
+        return dialogId;
     }
 
-    public void setTargetAddress(String targetAddress) {
-        this.targetAddress = targetAddress;
+    public void setDialogId(String dialogId) {
+        this.dialogId = dialogId;
     }
+
 
     //Methods
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Request{");
-        sb.append("extension='").append(extension).append('\'');
-        sb.append(", loginId='").append(loginId).append('\'');
+        sb.append("loginId='").append(loginId).append('\'');
+        sb.append(", extension='").append(extension).append('\'');
         sb.append(", action=").append(action);
-        sb.append(", targetAddress=").append(targetAddress);
+        sb.append(", password='").append(password).append('\'');
+        sb.append(", dialogId='").append(dialogId).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -1,4 +1,4 @@
-package ua.com.smiddle.core.util.model;
+package ua.com.smiddle.core.util.model.interfaces;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
