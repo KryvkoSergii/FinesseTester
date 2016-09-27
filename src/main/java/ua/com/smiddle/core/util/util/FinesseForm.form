@@ -156,6 +156,12 @@
               </grid>
             </children>
           </grid>
+          <component id="c2401" class="javax.swing.JButton" binding="btnMultiUserMode">
+            <constraints/>
+            <properties>
+              <text value="Multi-user mode"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <vspacer id="ed2d9">

@@ -9,6 +9,7 @@ import ua.com.smiddle.core.util.model.interfaces.OutboundDialog;
 import ua.com.smiddle.core.util.web.Sender;
 import ua.com.smiddle.core.util.model.interfaces.Action;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -49,15 +52,22 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JButton btnDrop;
     private JButton btnHold;
     private JButton btnUnhold;
+    private JButton btnMultiUserMode;
 
 
     //Constructors
     public FinesseForm() {
         super();
         //== declaration ======
+//        try {
+//            setIconImage(ImageIO.read(new File("/home/srg/java/logo_s.png")));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         setContentPane(contentPane);
         thisForm = this;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+
         setTitle("FINESSE CONNECTOR");
         setVisible(true);
         setSize(850, 300);
@@ -123,7 +133,14 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnUnhold.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                stateHandler.firePropertyChange("do_action", null, Action.UNHOLD);
+                stateHandler.firePropertyChange("do_action", null, Action.RETRIEVE);
+            }
+        });
+        btnMultiUserMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MultiUserForm multiUserForm = new MultiUserForm();
+                multiUserForm.setVisible(true);
             }
         });
     }
@@ -215,6 +232,10 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
 
     }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
+
 
     //Listeners
 
@@ -250,26 +271,26 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                         btnUnhold.setEnabled(true);
                     } else if (evt.getNewValue() == Action.NOT_READY) {
                         sendChangeState((Action) evt.getNewValue());
-                        btnLogout.setEnabled(true);
-                        btnLogin.setEnabled(true);
-                        btnAnswer.setEnabled(true);
-                        btnCall.setEnabled(true);
-                        comboBox1.setEnabled(true);
-                        btnAnswer.setEnabled(true);
-                        btnDrop.setEnabled(true);
-                        btnHold.setEnabled(true);
-                        btnUnhold.setEnabled(true);
+//                        btnLogout.setEnabled(true);
+//                        btnLogin.setEnabled(true);
+//                        btnAnswer.setEnabled(true);
+//                        btnCall.setEnabled(true);
+//                        comboBox1.setEnabled(true);
+//                        btnAnswer.setEnabled(true);
+//                        btnDrop.setEnabled(true);
+//                        btnHold.setEnabled(true);
+//                        btnUnhold.setEnabled(true);
                     } else if (evt.getNewValue() == Action.READY) {
                         sendChangeState((Action) evt.getNewValue());
-                        btnLogout.setEnabled(true);
-                        btnLogin.setEnabled(true);
-                        btnAnswer.setEnabled(true);
-                        btnCall.setEnabled(true);
-                        comboBox1.setEnabled(true);
-                        btnAnswer.setEnabled(true);
-                        btnDrop.setEnabled(true);
-                        btnHold.setEnabled(true);
-                        btnUnhold.setEnabled(true);
+//                        btnLogout.setEnabled(true);
+//                        btnLogin.setEnabled(true);
+//                        btnAnswer.setEnabled(true);
+//                        btnCall.setEnabled(true);
+//                        comboBox1.setEnabled(true);
+//                        btnAnswer.setEnabled(true);
+//                        btnDrop.setEnabled(true);
+//                        btnHold.setEnabled(true);
+//                        btnUnhold.setEnabled(true);
                     }
                 } else if (evt.getPropertyName().equals("event_state")) {
                     state.setAction((Action) evt.getNewValue());
@@ -283,7 +304,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                         sendDialog((Action) evt.getNewValue(), state.getDialogId());
                     } else if (evt.getNewValue() instanceof MakeCall && ((MakeCall) evt.getNewValue()).getAction() == Action.MAKE_CALL) {
                         sendMakeCall(((MakeCall) evt.getNewValue()).getAction(), ((MakeCall) evt.getNewValue()).toAddress);
-                    } else if (evt.getNewValue() instanceof Action && (evt.getNewValue() == Action.HOLD || evt.getNewValue() == Action.UNHOLD)) {
+                    } else if (evt.getNewValue() instanceof Action && (evt.getNewValue() == Action.HOLD || evt.getNewValue() == Action.RETRIEVE)) {
                         sendDialog((Action) evt.getNewValue(), state.getDialogId());
                     }
                 }
