@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 public class State extends Request {
     private String password;
     private String token;
+    private String IP;
 
 
     //Constructors
@@ -41,6 +42,13 @@ public class State extends Request {
         this.token = token;
     }
 
+    public String getIP() {
+        return IP;
+    }
+
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
 
     //Method
     @Override
@@ -49,6 +57,7 @@ public class State extends Request {
         sb.append(super.toString()).append(",");
         sb.append("password='").append(password).append('\'');
         sb.append(", token='").append(token).append('\'');
+        sb.append(", IP='").append(IP).append('\'');
         sb.append('}');
         return sb.toString();
     }

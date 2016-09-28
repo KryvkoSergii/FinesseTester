@@ -8,6 +8,8 @@ import ua.com.smiddle.core.util.web.Sender;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @Component("Login")
 @Scope("singleton")
@@ -23,6 +25,8 @@ public class Login extends JDialog {
     private JTextField txtLogin;
     private JTextField txtExtension;
     private JPasswordField txtPassword;
+    private JLabel lblIP;
+    private JTextField txtIP;
 
     public Login() {
         setTitle("ENTER DATA");
@@ -30,8 +34,7 @@ public class Login extends JDialog {
         setModal(true);
         pack();
         getRootPane().setDefaultButton(buttonOK);
-        setSize(300, 150);
-
+        setSize(300, 200);
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onOK();
@@ -62,10 +65,12 @@ public class Login extends JDialog {
         state.setLoginId(txtLogin.getText().trim());
         state.setPassword(txtPassword.getText().trim());
         state.setExtension(txtExtension.getText().trim());
+        state.setIP(txtIP.getText().trim());
         dispose();
         txtLogin.setText("");
         txtPassword.setText("");
         txtExtension.setText("");
+        txtIP.setText("127.0.0.1");
     }
 
     private void onCancel() {

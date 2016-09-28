@@ -36,22 +36,22 @@ public class Sender {
     private BufferedWriter bw;
 
     public void login() throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null,null,null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null, null, buildSubscriptionURL());
         makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     public void change_state(Object request) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null,null,null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null);
         makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     public void sendAction(Object request, String dialogId) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null,null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null, null);
         makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     public void makeCall(Object request, String toAddress) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress,null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress, null);
         makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
@@ -96,5 +96,12 @@ public class Sender {
             connection.setRequestProperty("Authorization", token);
             state.setToken(token);
         }
+    }
+
+    private String buildSubscriptionURL() {
+        String url = "http://".concat(state.getIP())
+                .concat(":").concat(environment.getProperty("server.port"))
+                .concat("/api/event");
+        return url;
     }
 }

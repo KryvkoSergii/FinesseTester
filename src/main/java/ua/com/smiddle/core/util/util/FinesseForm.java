@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import ua.com.smiddle.core.util.model.interfaces.ApiError;
 import ua.com.smiddle.core.util.model.interfaces.OutboundDialog;
 import ua.com.smiddle.core.util.web.Sender;
@@ -11,9 +12,13 @@ import ua.com.smiddle.core.util.model.interfaces.Action;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -41,6 +46,8 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     @Autowired
     @Qualifier("Sender")
     private Sender sender;
+    @Autowired
+    private Environment environment;
     private JButton btnLogin;
     private JButton btnCall;
     private JComboBox comboBox1;
@@ -53,6 +60,13 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JButton btnHold;
     private JButton btnUnhold;
     private JButton btnMultiUserMode;
+    private JButton btnSubscribe;
+    private JRadioButton rdbUser;
+    private JRadioButton rdbServer;
+    private JLabel subStatus;
+    private JPanel panelRBTN;
+    private JPanel subscriptionPanel;
+    private ButtonGroup radioButtonGroup;
 
 
     //Constructors
@@ -71,6 +85,9 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         setTitle("FINESSE CONNECTOR");
         setVisible(true);
         setSize(850, 300);
+        radioButtonGroup = new ButtonGroup();
+        radioButtonGroup.add(rdbUser);
+        radioButtonGroup.add(rdbServer);
         setInitUnknown();
         //== EVENT LISTENERS ===
         stateHandler = new PropertyChangeSupport(this);
@@ -79,10 +96,17 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnLogin.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loginDialog.setVisible(true);
-                stateHandler.firePropertyChange("set_state", state.getAction(), Action.LOGIN);
+                if (!rdbUser.isSelected() && !rdbServer.isSelected()) {
+                    JOptionPane.showMessageDialog(null, "Please, select subscription mode");
+                } else if (rdbUser.isSelected() && !rdbServer.isSelected()) {
+                    loginDialog.setVisible(true);
+                    stateHandler.firePropertyChange("set_state", state.getAction(), Action.LOGIN);
+                } else if (!rdbUser.isSelected() && rdbServer.isSelected()) {
+                    JOptionPane.showMessageDialog(null, "not implemented yet");
+                }
             }
         });
+
         comboBox1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -208,6 +232,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnDrop.setEnabled(false);
         btnHold.setEnabled(false);
         btnUnhold.setEnabled(false);
+        btnMultiUserMode.setVisible(false);
     }
 
     public void changeAgentState(Action action) {
@@ -231,10 +256,10 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         }
 
     }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
+//
+//    private void createUIComponents() {
+//        // TODO: place custom component creation code here
+//    }
 
 
     //Listeners
@@ -295,6 +320,11 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                 } else if (evt.getPropertyName().equals("event_state")) {
                     state.setAction((Action) evt.getNewValue());
                     lblState.setText(state.getAction().toString());
+                    if (((Action) evt.getNewValue()) == Action.LOGOUT) {
+                        thisForm.setTitle("FINESSE CONNECTOR");
+                    } else {
+                        thisForm.setTitle("FINESSE CONNECTOR (" + state.getLoginId() + "):" + environment.getProperty("server.port"));
+                    }
                 } else if (evt.getPropertyName().equals("event_error")) {
                     ApiError error = (ApiError) evt.getNewValue();
                     JOptionPane.showMessageDialog(null, error.getErrorMessage() + " " + error.getErrorType(),
