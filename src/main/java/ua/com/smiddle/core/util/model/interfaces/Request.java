@@ -4,8 +4,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Предназначен для отправки запросов по JSON из TPS(thrid-party-system) -> SmiddleFinesseConnector.
+ * <br/><h3>Содержит следующие данные:</h3>
+ * <br/>{@code loginId} - идентификатор агента в системе Cisco Finesse;
+ * <br/>{@code extension} - номер аппарата агента;
+ * <br/>{@code action} - стостояние агента / выполняемое действие агентом;
+ * <br/>{@code password} - пароль агента в системе Cisco Finesse;
+ * <br/>{@code dialogId} - идентификатор диалога в системе Cisco Finesse
+ * <br/>{@code toAddress} - целевой номер аппарата при исходящем звонке
  *
- * @author KSA
+ * @author Kryvko Sergii (ksa@smiddle.com.ua)
+ * @project SmiddleFinesseConnector
  */
 public class Request {
     //Идентификтор агента
@@ -21,19 +29,33 @@ public class Request {
     private String dialogId;
     //целевой телефон при исходящем звонке
     private String toAddress;
+    //URL отправки событий пользователю
+    private String subscriptionURL;
 
 
     //Constructor
     public Request() {
     }
 
-    public Request(String loginId, String extension, Action action, String password, String dialogId, String toAddress) {
+    /**
+     * Предназначен для отправки запросов по JSON из TPS(thrid-party-system) -> SmiddleFinesseConnector.
+     *
+     * @param loginId         идентификатор агента в системе Cisco Finesse
+     * @param extension       номер аппарата агента
+     * @param action          стостояние агента / выполняемое действие агентом
+     * @param password        пароль агента в системе Cisco Finesse
+     * @param dialogId        идентификатор диалога в системе Cisco Finesse
+     * @param toAddress       целевой номер аппарата при исходящем звонке
+     * @param subscriptionURL URL отправки событий пользователю
+     */
+    public Request(String loginId, String extension, Action action, String password, String dialogId, String toAddress, String subscriptionURL) {
         this.loginId = loginId;
         this.extension = extension;
         this.action = action;
         this.password = password;
         this.dialogId = dialogId;
         this.toAddress = toAddress;
+        this.subscriptionURL = subscriptionURL;
     }
 
 
@@ -86,6 +108,14 @@ public class Request {
         this.toAddress = toAddress;
     }
 
+    public String getSubscriptionURL() {
+        return subscriptionURL;
+    }
+
+    public void setSubscriptionURL(String subscriptionURL) {
+        this.subscriptionURL = subscriptionURL;
+    }
+
 
     //Methods
     @Override
@@ -94,9 +124,9 @@ public class Request {
         sb.append("loginId='").append(loginId).append('\'');
         sb.append(", extension='").append(extension).append('\'');
         sb.append(", action=").append(action);
-        sb.append(", password='").append(password).append('\'');
         sb.append(", dialogId='").append(dialogId).append('\'');
         sb.append(", toAddress='").append(toAddress).append('\'');
+        sb.append(", subscriptionURL='").append(subscriptionURL).append('\'');
         sb.append('}');
         return sb.toString();
     }
