@@ -37,22 +37,22 @@ public class Sender {
 
     public void login() throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null,null);
-        makeRequest(state.getLoginId(), state.getPassword(), "/login", r);
+        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     public void change_state(Object request) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null,null);
-        makeRequest(state.getLoginId(), state.getPassword(), "/change_state", r);
+        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     public void sendAction(Object request, String dialogId) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null);
-        makeRequest(state.getLoginId(), state.getPassword(), "/do_action", r);
+        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     public void makeCall(Object request, String toAddress) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress);
-        makeRequest(state.getLoginId(), state.getPassword(), "/do_action", r);
+        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
     }
 
     private void makeRequest(String loginId, String password, String actionURL, Object request) throws Exception {
