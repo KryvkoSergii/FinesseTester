@@ -7,17 +7,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import ua.com.smiddle.core.util.model.interfaces.Action;
 import ua.com.smiddle.core.util.model.interfaces.Request;
+import ua.com.smiddle.core.util.model.interfaces.Subscription;
 import ua.com.smiddle.core.util.util.FinesseForm;
 import ua.com.smiddle.core.util.util.JacksonUtil;
 import ua.com.smiddle.core.util.util.State;
 
-import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Base64;
-import java.util.Scanner;
 
 /**
  * Created by srg on 21.09.16.
@@ -37,25 +36,43 @@ public class Sender {
 
     public void login() throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null, null, buildSubscriptionURL());
-        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
+        makeRequest("/action", r);
     }
 
     public void change_state(Object request) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null);
-        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
+        makeRequest("/action", r);
     }
 
     public void sendAction(Object request, String dialogId) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null, null);
-        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
+        makeRequest("/action", r);
     }
 
     public void makeCall(Object request, String toAddress) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress, null);
-        makeRequest(state.getLoginId(), state.getPassword(), "/action", r);
+        makeRequest("/action", r);
     }
 
-    private void makeRequest(String loginId, String password, String actionURL, Object request) throws Exception {
+    public void makeConsultCall(Object request, String toAddress, String dialogId) throws Exception {
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, toAddress, null);
+        makeRequest("/action", r);
+    }
+
+    public void sendSubscription(String action, String authToken) throws Exception {
+        Subscription subscription = new Subscription(buildSubscriptionURL(), authToken);
+        if (action.equals("subscribe")) {
+            makeRequest("/subscribe", subscription);
+            finesseForm.addLog("Subscription: " + subscription.toString());
+        } else if (action.equals("unsubscribe")) {
+            makeRequest("/unsubscribe", subscription);
+            finesseForm.addLog("Unsubscription: " + subscription.toString());
+        } else {
+            finesseForm.addLog("Unknown subscription state");
+        }
+    }
+
+    private void makeRequest(String actionURL, Object request) throws Exception {
         URL url = new URL(buildURL(actionURL));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");

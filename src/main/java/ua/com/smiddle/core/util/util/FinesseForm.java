@@ -10,20 +10,13 @@ import ua.com.smiddle.core.util.model.interfaces.OutboundDialog;
 import ua.com.smiddle.core.util.web.Sender;
 import ua.com.smiddle.core.util.model.interfaces.Action;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -66,6 +59,9 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JLabel subStatus;
     private JPanel panelRBTN;
     private JPanel subscriptionPanel;
+    private JButton btnConsultCall;
+    private JButton btnTransfer;
+    private JButton btnConference;
     private ButtonGroup radioButtonGroup;
 
 
@@ -148,6 +144,13 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                 stateHandler.firePropertyChange("do_action", null, new MakeCall(Action.MAKE_CALL, phoneNumber));
             }
         });
+        btnConsultCall.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String phoneNumber = JOptionPane.showInputDialog(null, "Enter phone number", "MAKE A CONSULT CALL", JOptionPane.INFORMATION_MESSAGE);
+                stateHandler.firePropertyChange("do_action", null, new MakeCall(Action.CONSULT_CALL, phoneNumber));
+            }
+        });
         btnHold.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -165,6 +168,29 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
             public void actionPerformed(ActionEvent e) {
                 MultiUserForm multiUserForm = new MultiUserForm();
                 multiUserForm.setVisible(true);
+            }
+        });
+        btnSubscribe.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (rdbUser.isSelected())
+                    JOptionPane.showMessageDialog(null, "Subscription available on server mode", "SUBSCRIPTION WARNING", JOptionPane.WARNING_MESSAGE);
+                if (rdbServer.isSelected()) {
+                    String authToken = JOptionPane.showInputDialog(null, "Input authorization token");
+                    stateHandler.firePropertyChange("subscription", null, authToken);
+                }
+            }
+        });
+        btnTransfer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stateHandler.firePropertyChange("do_action", null, Action.TRANSFER);
+            }
+        });
+        btnConference.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stateHandler.firePropertyChange("do_action", null, Action.CONFERENCE);
             }
         });
     }
@@ -204,6 +230,22 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         }
     }
 
+    private void sendMakeConsultCall(Action action, String toAddress, String dialogId) {
+        try {
+            sender.makeConsultCall(action, toAddress, dialogId);
+        } catch (Exception e) {
+            addException(e.getMessage());
+        }
+    }
+
+    private void sendSubscription(String action, String authToken) {
+        try {
+            sender.sendSubscription(action, authToken);
+        } catch (Exception e) {
+            addException(e.getMessage());
+        }
+    }
+
     @Override
     public void run(String... strings) throws Exception {
         EventQueue.invokeLater(new Runnable() {
@@ -223,6 +265,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     }
 
     private void setInitUnknown() {
+        btnSubscribe.setText("subscribe");
         btnLogout.setEnabled(false);
         btnLogin.setEnabled(true);
         btnAnswer.setEnabled(true);
@@ -323,7 +366,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                     if (((Action) evt.getNewValue()) == Action.LOGOUT) {
                         thisForm.setTitle("FINESSE CONNECTOR");
                     } else {
-                        thisForm.setTitle("FINESSE CONNECTOR (" + state.getLoginId() + "):" + environment.getProperty("server.port"));
+                        thisForm.setTitle("FINESSE CONNECTOR (" + state.getLoginId() + "):" + environment.getProperty("server.port") + ": ext=" + state.getExtension());
                     }
                 } else if (evt.getPropertyName().equals("event_error")) {
                     ApiError error = (ApiError) evt.getNewValue();
@@ -334,8 +377,20 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                         sendDialog((Action) evt.getNewValue(), state.getDialogId());
                     } else if (evt.getNewValue() instanceof MakeCall && ((MakeCall) evt.getNewValue()).getAction() == Action.MAKE_CALL) {
                         sendMakeCall(((MakeCall) evt.getNewValue()).getAction(), ((MakeCall) evt.getNewValue()).toAddress);
+                    } else if (evt.getNewValue() instanceof MakeCall && ((MakeCall) evt.getNewValue()).getAction() == Action.CONSULT_CALL) {
+                        sendMakeConsultCall(((MakeCall) evt.getNewValue()).getAction(), ((MakeCall) evt.getNewValue()).toAddress, state.getDialogId());
                     } else if (evt.getNewValue() instanceof Action && (evt.getNewValue() == Action.HOLD || evt.getNewValue() == Action.RETRIEVE)) {
                         sendDialog((Action) evt.getNewValue(), state.getDialogId());
+                    } else if (evt.getNewValue() instanceof Action && (evt.getNewValue() == Action.TRANSFER || evt.getNewValue() == Action.CONFERENCE)) {
+                        sendDialog((Action) evt.getNewValue(), state.getDialogId());
+                    }
+                } else if (evt.getPropertyName().equals("subscription")) {
+                    if (btnSubscribe.getText().equals("subscribe")) {
+                        sendSubscription("subscribe", evt.getNewValue().toString());
+                        addLog("subscription ...");
+                    } else if (btnSubscribe.getText().equals("unsubscribe")) {
+                        sendSubscription("unsubscribe", evt.getNewValue().toString());
+                        addLog("unsubscription ...");
                     }
                 }
             } catch (Exception e) {

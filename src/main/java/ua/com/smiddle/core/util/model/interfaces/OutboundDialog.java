@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 /**
- * Предназначен для передачи информации о диалоге по JSON.
+ * Предназначен для передачи информации о диалоге SmiddleFinesseConnector -> TPS(thrid-party-system) по JSON.
+ * Содержит следующие данные: {@code id} - идентификатор диалога в системе Cisco Finesse; {@code fromAddress} - номер аппарата автора звонка;
+ * {@code toAddress} - номер аппарата получателя звонка; {@code callVariables} - переменные звонка.
  *
- * @author KSA
+ * @author Kryvko Sergii (ksa@smiddle.com.ua)
+ * @project SmiddleFinesseConnector
  */
 @JsonIgnoreProperties
 public class OutboundDialog {
@@ -15,17 +18,31 @@ public class OutboundDialog {
     private String id;
     private String fromAddress;
     private String toAddress;
+    private String DNIS;
+    private String callType;
 
 
     //Constructors
     public OutboundDialog() {
     }
 
-    public OutboundDialog(String id, String fromAddress, String toAddress, List<CallVariable> callVariables) {
+    /**
+     * Предназначен для передачи информации о диалоге SmiddleFinesseConnector -> TPS(thrid-party-system) по JSON.
+     *
+     * @param id            идентификатор диалога CiscoFinesse
+     * @param fromAddress   номер аппарата автора звонка
+     * @param toAddress     номер аппарата получателя звонка
+     * @param callVariables переменные звонка
+     * @param DNIS          номер, который набрал клиент
+     * @param callType      тип звонка
+     */
+    public OutboundDialog(String id, String fromAddress, String toAddress, List<CallVariable> callVariables, String DNIS, String callType) {
         this.id = id;
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.callVariables = callVariables;
+        this.DNIS = DNIS;
+        this.callType = callType;
     }
 
 
@@ -54,6 +71,14 @@ public class OutboundDialog {
         this.toAddress = toAddress;
     }
 
+    public String getDNIS() {
+        return DNIS;
+    }
+
+    public void setDNIS(String DNIS) {
+        this.DNIS = DNIS;
+    }
+
     public List<CallVariable> getCallVariables() {
         return callVariables;
     }
@@ -62,6 +87,13 @@ public class OutboundDialog {
         this.callVariables = callVariables;
     }
 
+    public String getCallType() {
+        return callType;
+    }
+
+    public void setCallType(String callType) {
+        this.callType = callType;
+    }
 
     //Methods
     @Override
@@ -71,6 +103,8 @@ public class OutboundDialog {
         sb.append(", fromAddress='").append(fromAddress).append('\'');
         sb.append(", toAddress='").append(toAddress).append('\'');
         sb.append(", callVariables=").append(callVariables);
+        sb.append(", DNIS=").append(DNIS);
+        sb.append(", callType=").append(callType);
         sb.append('}');
         return sb.toString();
     }
