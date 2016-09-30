@@ -48,5 +48,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:4.1.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.intellij:forms_rt:5.0" level="project" />
   </component>
 </module>
