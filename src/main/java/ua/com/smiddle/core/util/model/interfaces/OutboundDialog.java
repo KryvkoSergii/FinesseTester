@@ -1,5 +1,6 @@
 package ua.com.smiddle.core.util.model.interfaces;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class OutboundDialog {
     private String toAddress;
     private String DNIS;
     private String callType;
+    private String dialogState;
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    private List<Action> allowedActions;
 
 
     //Constructors
@@ -43,6 +47,17 @@ public class OutboundDialog {
         this.callVariables = callVariables;
         this.DNIS = DNIS;
         this.callType = callType;
+    }
+
+    public OutboundDialog(String id, String fromAddress, String toAddress, List<CallVariable> callVariables, String DNIS, String callType, String dialogState, List<Action> allowedActions) {
+        this.id = id;
+        this.fromAddress = fromAddress;
+        this.toAddress = toAddress;
+        this.callVariables = callVariables;
+        this.DNIS = DNIS;
+        this.callType = callType;
+        this.dialogState = dialogState;
+        this.allowedActions = allowedActions;
     }
 
 
@@ -95,16 +110,35 @@ public class OutboundDialog {
         this.callType = callType;
     }
 
+    public String getDialogState() {
+        return dialogState;
+    }
+
+    public void setDialogState(String dialogState) {
+        this.dialogState = dialogState;
+    }
+
+    public List<Action> getAllowedActions() {
+        return allowedActions;
+    }
+
+    public void setAllowedActions(List<Action> allowedActions) {
+        this.allowedActions = allowedActions;
+    }
+
+
     //Methods
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("OutboundDialog{");
-        sb.append("id='").append(id).append('\'');
+        sb.append("callVariables=").append(callVariables);
+        sb.append(", id='").append(id).append('\'');
         sb.append(", fromAddress='").append(fromAddress).append('\'');
         sb.append(", toAddress='").append(toAddress).append('\'');
-        sb.append(", callVariables=").append(callVariables);
-        sb.append(", DNIS=").append(DNIS);
-        sb.append(", callType=").append(callType);
+        sb.append(", DNIS='").append(DNIS).append('\'');
+        sb.append(", callType='").append(callType).append('\'');
+        sb.append(", dialogState='").append(dialogState).append('\'');
+        sb.append(", allowedActions=").append(allowedActions);
         sb.append('}');
         return sb.toString();
     }

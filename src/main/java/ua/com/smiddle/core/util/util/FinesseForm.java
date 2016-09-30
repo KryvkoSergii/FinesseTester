@@ -12,6 +12,7 @@ import ua.com.smiddle.core.util.model.interfaces.Action;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -19,7 +20,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by srg on 21.09.16.
@@ -63,6 +64,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JButton btnTransfer;
     private JButton btnConference;
     private ButtonGroup radioButtonGroup;
+    private Map<Action, JComponent> accessToButtons = new HashMap<>();
 
 
     //Constructors
@@ -84,7 +86,8 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         radioButtonGroup = new ButtonGroup();
         radioButtonGroup.add(rdbUser);
         radioButtonGroup.add(rdbServer);
-        setInitUnknown();
+        makeMappingActionsToButtons();
+
         //== EVENT LISTENERS ===
         stateHandler = new PropertyChangeSupport(this);
         stateHandler.addPropertyChangeListener(new EventListener());
@@ -287,23 +290,55 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     }
 
     public void setDialog(OutboundDialog dialog) {
-        if (state.getDialogId() == null) {
-            state.setDialogId(dialog.getId());
-        }
+//        if (state.getDialogId() == null) {
+//            state.setDialogId(dialog.getId());
+//        }
+
         //incoming call
-        if (!state.getDialogId().equals(dialog.getId())) {
-            if (state.getExtension().equals(dialog.getToAddress())) {
-                JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
-            }
+        if (dialog.getDialogState() != null && dialog.getDialogState().equals("ALERTING")) {
+            JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
             state.setDialogId(dialog.getId());
         }
+
+        if (!state.getDialogId().equals(dialog.getId())) {
+            state.setDialogId(dialog.getId());
+        }
+
+        stateHandler.firePropertyChange("process_call", null, dialog.getAllowedActions());
 
     }
-//
-//    private void createUIComponents() {
-//        // TODO: place custom component creation code here
-//    }
 
+    private void makeMappingActionsToButtons() {
+        accessToButtons.put(Action.ANSWER, btnAnswer);
+        accessToButtons.put(Action.DROP, btnDrop);
+        accessToButtons.put(Action.MAKE_CALL, btnCall);
+        accessToButtons.put(Action.CONSULT_CALL, btnConsultCall);
+        accessToButtons.put(Action.HOLD, btnHold);
+        accessToButtons.put(Action.RETRIEVE, btnUnhold);
+        accessToButtons.put(Action.TRANSFER, btnTransfer);
+        accessToButtons.put(Action.CONFERENCE, btnConference);
+    }
+
+    private void setAllButtonToDisable() {
+        for (JComponent component : accessToButtons.values()) {
+            component.setEnabled(false);
+        }
+        thisForm.repaint();
+    }
+
+    private void setAllButtonToEnable() {
+        for (JComponent component : accessToButtons.values()) {
+            component.setEnabled(true);
+        }
+        thisForm.repaint();
+    }
+
+    private void setButtonStatesDuringCall(java.util.List<Action> allowedActions) {
+        for (Action a : allowedActions) {
+            accessToButtons.get(a).setEnabled(true);
+        }
+        thisForm.repaint();
+    }
 
     //Listeners
 
@@ -392,6 +427,11 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                         sendSubscription("unsubscribe", evt.getNewValue().toString());
                         addLog("unsubscription ...");
                     }
+                } else if (evt.getPropertyName().equals("process_call")) {
+                    if (evt.getNewValue() != null && !((java.util.List<Action>) evt.getNewValue()).isEmpty()) {
+                        setAllButtonToDisable();
+                        setButtonStatesDuringCall((java.util.List<Action>) evt.getNewValue());
+                    } else setAllButtonToEnable();
                 }
             } catch (Exception e) {
                 addException("EventListener throw EXCEPTION=" + e.getMessage());
