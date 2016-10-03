@@ -290,10 +290,6 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     }
 
     public void setDialog(OutboundDialog dialog) {
-//        if (state.getDialogId() == null) {
-//            state.setDialogId(dialog.getId());
-//        }
-
         //incoming call
         if (dialog.getDialogState() != null && dialog.getDialogState().equals("ALERTING")) {
             JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
@@ -335,7 +331,8 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
 
     private void setButtonStatesDuringCall(java.util.List<Action> allowedActions) {
         for (Action a : allowedActions) {
-            accessToButtons.get(a).setEnabled(true);
+            if (accessToButtons.containsKey(a))
+                accessToButtons.get(a).setEnabled(true);
         }
         thisForm.repaint();
     }
@@ -374,26 +371,8 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                         btnUnhold.setEnabled(true);
                     } else if (evt.getNewValue() == Action.NOT_READY) {
                         sendChangeState((Action) evt.getNewValue());
-//                        btnLogout.setEnabled(true);
-//                        btnLogin.setEnabled(true);
-//                        btnAnswer.setEnabled(true);
-//                        btnCall.setEnabled(true);
-//                        comboBox1.setEnabled(true);
-//                        btnAnswer.setEnabled(true);
-//                        btnDrop.setEnabled(true);
-//                        btnHold.setEnabled(true);
-//                        btnUnhold.setEnabled(true);
                     } else if (evt.getNewValue() == Action.READY) {
                         sendChangeState((Action) evt.getNewValue());
-//                        btnLogout.setEnabled(true);
-//                        btnLogin.setEnabled(true);
-//                        btnAnswer.setEnabled(true);
-//                        btnCall.setEnabled(true);
-//                        comboBox1.setEnabled(true);
-//                        btnAnswer.setEnabled(true);
-//                        btnDrop.setEnabled(true);
-//                        btnHold.setEnabled(true);
-//                        btnUnhold.setEnabled(true);
                     }
                 } else if (evt.getPropertyName().equals("event_state")) {
                     state.setAction((Action) evt.getNewValue());
@@ -435,6 +414,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                 }
             } catch (Exception e) {
                 addException("EventListener throw EXCEPTION=" + e.getMessage());
+                e.printStackTrace();
             }
         }
     }

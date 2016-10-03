@@ -79,7 +79,6 @@ public class Sender {
         connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         connection.setRequestProperty("Cache-Control", "no-cache");
         connection.setRequestProperty("Accept", "*/*");
-//        addAuth(connection, loginId, password);
         connection.setDoOutput(true);
         connection.setDoInput(true);
         connection.connect();
