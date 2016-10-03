@@ -35,27 +35,27 @@ public class Sender {
     private BufferedWriter bw;
 
     public void login() throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null, null, buildSubscriptionURL());
+        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null, null, buildSubscriptionURL(),"json");
         makeRequest("/action", r);
     }
 
     public void change_state(Object request) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null,"json");
         makeRequest("/action", r);
     }
 
     public void sendAction(Object request, String dialogId) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null, null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null, null,"json");
         makeRequest("/action", r);
     }
 
     public void makeCall(Object request, String toAddress) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress, null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress, null,"json");
         makeRequest("/action", r);
     }
 
     public void makeConsultCall(Object request, String toAddress, String dialogId) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, toAddress, null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, toAddress, null,"json");
         makeRequest("/action", r);
     }
 
@@ -99,7 +99,8 @@ public class Sender {
         String url = "http://".concat(environment.getProperty("connection.connection.ip")
                 .concat(":").concat(environment.getProperty("connection.connection.port"))
                 .concat("/finesse")
-                .concat("/connector").concat(actionURL));
+                .concat("/connector")
+                .concat("/json").concat(actionURL));
         return url;
     }
 

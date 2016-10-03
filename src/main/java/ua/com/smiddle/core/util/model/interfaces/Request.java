@@ -31,6 +31,8 @@ public class Request {
     private String toAddress;
     //URL отправки событий пользователю
     private String subscriptionURL;
+    //формат получаемых сообщений json или xml
+    private String messageFormat;
 
 
     //Constructor
@@ -48,7 +50,8 @@ public class Request {
      * @param toAddress       целевой номер аппарата при исходящем звонке
      * @param subscriptionURL URL отправки событий пользователю
      */
-    public Request(String loginId, String extension, Action action, String password, String dialogId, String toAddress, String subscriptionURL) {
+    public Request(String loginId, String extension, Action action, String password, String dialogId, String toAddress,
+                   String subscriptionURL, String messageFormat) {
         this.loginId = loginId;
         this.extension = extension;
         this.action = action;
@@ -56,6 +59,7 @@ public class Request {
         this.dialogId = dialogId;
         this.toAddress = toAddress;
         this.subscriptionURL = subscriptionURL;
+        this.messageFormat = messageFormat;
     }
 
 
@@ -114,6 +118,14 @@ public class Request {
 
     public void setSubscriptionURL(String subscriptionURL) {
         this.subscriptionURL = subscriptionURL;
+    }
+
+    public String getMessageFormat() {
+        return messageFormat;
+    }
+
+    public void setMessageFormat(String messageFormat) {
+        this.messageFormat = messageFormat;
     }
 
 

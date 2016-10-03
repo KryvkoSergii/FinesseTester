@@ -83,6 +83,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         setTitle("FINESSE CONNECTOR");
         setVisible(true);
         setSize(850, 300);
+        setInitUnknown();
         radioButtonGroup = new ButtonGroup();
         radioButtonGroup.add(rdbUser);
         radioButtonGroup.add(rdbServer);
@@ -275,10 +276,13 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnCall.setEnabled(false);
         comboBox1.setEnabled(false);
         btnAnswer.setEnabled(false);
-        btnDrop.setEnabled(false);
+        btnDrop.setEnabled(true);
         btnHold.setEnabled(false);
         btnUnhold.setEnabled(false);
         btnMultiUserMode.setVisible(false);
+        btnConsultCall.setEnabled(false);
+        btnTransfer.setEnabled(false);
+        btnConference.setEnabled(false);
     }
 
     public void changeAgentState(Action action) {
@@ -296,7 +300,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
             state.setDialogId(dialog.getId());
         }
 
-        if (!state.getDialogId().equals(dialog.getId())) {
+        if (state.getDialogId()==null || !state.getDialogId().equals(dialog.getId())) {
             state.setDialogId(dialog.getId());
         }
 
@@ -353,24 +357,32 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                 if (evt.getPropertyName().equals("set_state")) {
                     if (evt.getNewValue() == Action.LOGOUT) {
                         sendChangeState((Action) evt.getNewValue());
-                        btnLogout.setEnabled(true);
-                        btnLogin.setEnabled(true);
-                        btnAnswer.setEnabled(true);
-                        btnCall.setEnabled(true);
-                        comboBox1.setEnabled(true);
                     } else if (evt.getNewValue() == Action.LOGIN) {
                         sendLOGIN();
                         btnLogout.setEnabled(true);
                         btnLogin.setEnabled(true);
-                        btnAnswer.setEnabled(true);
+                        btnAnswer.setEnabled(false);
                         btnCall.setEnabled(true);
                         comboBox1.setEnabled(true);
-                        btnAnswer.setEnabled(true);
                         btnDrop.setEnabled(true);
-                        btnHold.setEnabled(true);
-                        btnUnhold.setEnabled(true);
+                        btnHold.setEnabled(false);
+                        btnUnhold.setEnabled(false);
+                        btnConsultCall.setEnabled(false);
+                        btnTransfer.setEnabled(false);
+                        btnConference.setEnabled(false);
                     } else if (evt.getNewValue() == Action.NOT_READY) {
                         sendChangeState((Action) evt.getNewValue());
+                        btnLogout.setEnabled(true);
+                        btnLogin.setEnabled(false);
+                        btnAnswer.setEnabled(false);
+                        btnCall.setEnabled(true);
+                        comboBox1.setEnabled(true);
+                        btnDrop.setEnabled(true);
+                        btnHold.setEnabled(false);
+                        btnUnhold.setEnabled(false);
+                        btnConsultCall.setEnabled(false);
+                        btnTransfer.setEnabled(false);
+                        btnConference.setEnabled(false);
                     } else if (evt.getNewValue() == Action.READY) {
                         sendChangeState((Action) evt.getNewValue());
                     }

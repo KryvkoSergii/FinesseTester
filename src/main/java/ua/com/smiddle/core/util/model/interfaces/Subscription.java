@@ -9,6 +9,8 @@ public class Subscription {
     private String subscriptionURL;
     //содержит зашифрованный Base64 adminLogin:adminPassword
     private String authToken;
+    //формат получаемых сообщений json или xml
+    private String messageFormat;
 
 
     //Constructors
@@ -22,6 +24,12 @@ public class Subscription {
     public Subscription(String subscriptionURL, String authToken) {
         this.subscriptionURL = subscriptionURL;
         this.authToken = authToken;
+    }
+
+    public Subscription(String subscriptionURL, String authToken, String messageFormat) {
+        this.subscriptionURL = subscriptionURL;
+        this.authToken = authToken;
+        this.messageFormat = messageFormat;
     }
 
 
@@ -42,13 +50,22 @@ public class Subscription {
         this.authToken = authToken;
     }
 
+    public String getMessageFormat() {
+        return messageFormat;
+    }
+
+    public void setMessageFormat(String messageFormat) {
+        this.messageFormat = messageFormat;
+    }
+
 
     //Methods
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Subscription{");
         sb.append("subscriptionURL='").append(subscriptionURL).append('\'');
-        sb.append("authToken='").append(authToken).append('\'');
+        sb.append(", authToken='").append(authToken).append('\'');
+        sb.append(", messageFormat='").append(messageFormat).append('\'');
         sb.append('}');
         return sb.toString();
     }
