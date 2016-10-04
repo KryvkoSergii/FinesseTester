@@ -35,32 +35,32 @@ public class Sender {
     private BufferedWriter bw;
 
     public void login() throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null, null, buildSubscriptionURL(),"json");
+        Request r = new Request(state.getLoginId(), state.getExtension(), Action.LOGIN, state.getPassword(), null, null, buildSubscriptionURL(), "json");
         makeRequest("/action", r);
     }
 
     public void change_state(Object request) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null,"json");
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null, null);
         makeRequest("/action", r);
     }
 
     public void sendAction(Object request, String dialogId) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null, null,"json");
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, null, null, null);
         makeRequest("/action", r);
     }
 
     public void makeCall(Object request, String toAddress) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress, null,"json");
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, toAddress, null, null);
         makeRequest("/action", r);
     }
 
     public void makeConsultCall(Object request, String toAddress, String dialogId) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, toAddress, null,"json");
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), dialogId, toAddress, null, null);
         makeRequest("/action", r);
     }
 
     public void sendSubscription(String action, String authToken) throws Exception {
-        Subscription subscription = new Subscription(buildSubscriptionURL(), authToken);
+        Subscription subscription = new Subscription(buildSubscriptionURL(), authToken, "json");
         if (action.equals("subscribe")) {
             makeRequest("/subscribe", subscription);
             finesseForm.addLog("Subscription: " + subscription.toString());
@@ -98,8 +98,8 @@ public class Sender {
     private String buildURL(String actionURL) {
         String url = "http://".concat(environment.getProperty("connection.connection.ip")
                 .concat(":").concat(environment.getProperty("connection.connection.port"))
-                .concat("/finesse")
-                .concat("/connector")
+                .concat("/sfc")
+                .concat("/api")
                 .concat("/json").concat(actionURL));
         return url;
     }

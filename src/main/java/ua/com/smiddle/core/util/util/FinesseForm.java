@@ -247,6 +247,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
             sender.sendSubscription(action, authToken);
         } catch (Exception e) {
             addException(e.getMessage());
+            e.printStackTrace();
         }
     }
 
