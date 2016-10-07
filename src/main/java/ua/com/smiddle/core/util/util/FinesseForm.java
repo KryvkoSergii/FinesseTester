@@ -374,7 +374,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                     } else if (evt.getNewValue() == Action.NOT_READY) {
                         sendChangeState((Action) evt.getNewValue());
                         btnLogout.setEnabled(true);
-                        btnLogin.setEnabled(false);
+                        btnLogin.setEnabled(true);
                         btnAnswer.setEnabled(false);
                         btnCall.setEnabled(true);
                         comboBox1.setEnabled(true);

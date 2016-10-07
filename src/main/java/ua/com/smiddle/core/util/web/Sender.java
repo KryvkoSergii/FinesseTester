@@ -98,6 +98,7 @@ public class Sender {
     private String buildURL(String actionURL) {
         String url = "http://".concat(environment.getProperty("connection.connection.ip")
                 .concat(":").concat(environment.getProperty("connection.connection.port"))
+//                .concat("/SmiddleFinesseConnector")
                 .concat("/sfc")
                 .concat("/api")
                 .concat("/json").concat(actionURL));
