@@ -63,6 +63,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JButton btnConsultCall;
     private JButton btnTransfer;
     private JButton btnConference;
+    private JButton TESTButton;
     private ButtonGroup radioButtonGroup;
     private Map<Action, JComponent> accessToButtons = new HashMap<>();
 
@@ -92,6 +93,13 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         //== EVENT LISTENERS ===
         stateHandler = new PropertyChangeSupport(this);
         stateHandler.addPropertyChangeListener(new EventListener());
+
+        TESTButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendTest();
+            }
+        });
 
         btnLogin.addActionListener(new AbstractAction() {
             @Override
@@ -204,6 +212,15 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private void sendLOGIN() {
         try {
             sender.login();
+        } catch (Exception e) {
+            addException(e.getMessage());
+            return;
+        }
+    }
+
+    private void sendTest() {
+        try {
+            sender.change_state(Action.UNKNOWN);
         } catch (Exception e) {
             addException(e.getMessage());
             return;
