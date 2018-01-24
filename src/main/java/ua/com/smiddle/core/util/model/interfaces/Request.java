@@ -33,6 +33,8 @@ public class Request {
     private String subscriptionURL;
     //формат получаемых сообщений json или xml
     private String messageFormat;
+    //reason code
+    private String reasonCode;
 
 
     //Constructor
@@ -60,6 +62,30 @@ public class Request {
         this.toAddress = toAddress;
         this.subscriptionURL = subscriptionURL;
         this.messageFormat = messageFormat;
+    }
+
+    /**
+     * Предназначен для отправки запросов по JSON из TPS(thrid-party-system) -> SmiddleFinesseConnector.
+     *
+     * @param loginId         идентификатор агента в системе Cisco Finesse
+     * @param extension       номер аппарата агента
+     * @param action          стостояние агента / выполняемое действие агентом
+     * @param password        пароль агента в системе Cisco Finesse
+     * @param dialogId        идентификатор диалога в системе Cisco Finesse
+     * @param toAddress       целевой номер аппарата при исходящем звонке
+     * @param subscriptionURL URL отправки событий пользователю
+     */
+    public Request(String loginId, String extension, Action action, String password, String dialogId, String toAddress,
+                   String subscriptionURL, String messageFormat, String reasonCode) {
+        this.loginId = loginId;
+        this.extension = extension;
+        this.action = action;
+        this.password = password;
+        this.dialogId = dialogId;
+        this.toAddress = toAddress;
+        this.subscriptionURL = subscriptionURL;
+        this.messageFormat = messageFormat;
+        this.reasonCode = reasonCode;
     }
 
 
@@ -126,6 +152,14 @@ public class Request {
 
     public void setMessageFormat(String messageFormat) {
         this.messageFormat = messageFormat;
+    }
+
+    public String getReasonCode() {
+        return reasonCode;
+    }
+
+    public void setReasonCode(String reasonCode) {
+        this.reasonCode = reasonCode;
     }
 
 

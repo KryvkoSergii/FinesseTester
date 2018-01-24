@@ -5,14 +5,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
-import ua.com.smiddle.core.util.model.interfaces.ApiError;
-import ua.com.smiddle.core.util.model.interfaces.OutboundDialog;
-import ua.com.smiddle.core.util.web.Sender;
 import ua.com.smiddle.core.util.model.interfaces.Action;
+import ua.com.smiddle.core.util.model.interfaces.*;
+import ua.com.smiddle.core.util.web.Sender;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -21,13 +19,14 @@ import java.beans.PropertyChangeSupport;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by srg on 21.09.16.
  */
 @org.springframework.stereotype.Component("FinesseForm")
 @Scope("singleton")
-public class FinesseForm extends JFrame implements CommandLineRunner {
+public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCodeContainer {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH);
     FinesseForm thisForm;
     private PropertyChangeSupport stateHandler;
@@ -66,6 +65,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private JButton TESTButton;
     private ButtonGroup radioButtonGroup;
     private Map<Action, JComponent> accessToButtons = new HashMap<>();
+    private final ReasonCodeContainer reasonCodeContainer;
 
 
     //Constructors
@@ -77,6 +77,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+        reasonCodeContainer = new ReasonCodeContainerImpl();
         setContentPane(contentPane);
         thisForm = this;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -209,6 +210,66 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
 
 
     //Methods
+
+
+    @Override
+    public List<ReasonCode> getNotReadyReasonCode() {
+        return reasonCodeContainer.getNotReadyReasonCode();
+    }
+
+    @Override
+    public List<ReasonCode> getLogoutReasonCode() {
+        return reasonCodeContainer.getLogoutReasonCode();
+    }
+
+    @Override
+    public void update(Action action, List<ReasonCode> codes) {
+        reasonCodeContainer.update(action, codes);
+    }
+
+    @Override
+    public void run(String... strings) throws Exception {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+//                FinesseForm frame = new FinesseForm();
+//                ContextLoader.getCurrentWebApplicationContext().getBean(FinesseForm.class);
+            }
+        });
+    }
+
+    public void addException(String message) {
+        addLog("EXCEPTION=" + message);
+    }
+
+    public void addLog(String message) {
+        LOGSTextArea.append(LocalDateTime.now().format(formatter) + " " + message + '\n');
+    }
+
+    public void changeAgentState(Action action) {
+        stateHandler.firePropertyChange("event_state", state.getAction(), action);
+    }
+
+    public void showError(ApiError error) {
+        stateHandler.firePropertyChange("event_error", null, error);
+    }
+
+    public void setDialog(OutboundDialog dialog) {
+        //incoming call
+        if (dialog.getDialogState() != null && dialog.getDialogState().equals("ALERTING")) {
+            JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
+            state.setDialogId(dialog.getId());
+        }
+
+        if (state.getDialogId() == null || !state.getDialogId().equals(dialog.getId())) {
+            state.setDialogId(dialog.getId());
+        }
+
+        stateHandler.firePropertyChange("process_call", null, dialog.getAllowedActions());
+
+    }
+
+
+    //private methods
     private void sendLOGIN() {
         try {
             sender.login();
@@ -230,6 +291,14 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
     private void sendChangeState(Action action) {
         try {
             sender.change_state(action);
+        } catch (Exception e) {
+            addException(e.getMessage());
+        }
+    }
+
+    private void sendChangeStateWithReasonCode(Action action, String reasonCode) {
+        try {
+            sender.change_state_with_reason_code(action, reasonCode);
         } catch (Exception e) {
             addException(e.getMessage());
         }
@@ -268,23 +337,6 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         }
     }
 
-    @Override
-    public void run(String... strings) throws Exception {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-//                FinesseForm frame = new FinesseForm();
-//                ContextLoader.getCurrentWebApplicationContext().getBean(FinesseForm.class);
-            }
-        });
-    }
-
-    public void addException(String message) {
-        addLog("EXCEPTION=" + message);
-    }
-
-    public void addLog(String message) {
-        LOGSTextArea.append(LocalDateTime.now().format(formatter) + " " + message + '\n');
-    }
 
     private void setInitUnknown() {
         btnSubscribe.setText("subscribe");
@@ -301,29 +353,6 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
         btnConsultCall.setEnabled(false);
         btnTransfer.setEnabled(false);
         btnConference.setEnabled(false);
-    }
-
-    public void changeAgentState(Action action) {
-        stateHandler.firePropertyChange("event_state", state.getAction(), action);
-    }
-
-    public void showError(ApiError error) {
-        stateHandler.firePropertyChange("event_error", null, error);
-    }
-
-    public void setDialog(OutboundDialog dialog) {
-        //incoming call
-        if (dialog.getDialogState() != null && dialog.getDialogState().equals("ALERTING")) {
-            JOptionPane.showMessageDialog(null, "Incoming call from " + dialog.getFromAddress(), "INCOMING CALL", JOptionPane.INFORMATION_MESSAGE);
-            state.setDialogId(dialog.getId());
-        }
-
-        if (state.getDialogId()==null || !state.getDialogId().equals(dialog.getId())) {
-            state.setDialogId(dialog.getId());
-        }
-
-        stateHandler.firePropertyChange("process_call", null, dialog.getAllowedActions());
-
     }
 
     private void makeMappingActionsToButtons() {
@@ -389,7 +418,14 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                         btnTransfer.setEnabled(false);
                         btnConference.setEnabled(false);
                     } else if (evt.getNewValue() == Action.NOT_READY) {
-                        sendChangeState((Action) evt.getNewValue());
+                        List<ReasonCode> codes;
+                        if ((codes = getNotReadyReasonCode()) != null) {
+                            ReasonCodeDialog dialog = new ReasonCodeDialog(getNotReadyReasonCode());
+                            dialog.setModal(true);
+                            ReasonCode reason = dialog.getReasonCode();
+                            sendChangeStateWithReasonCode((Action) evt.getNewValue(), reason.getId());
+                        } else
+                            sendChangeState((Action) evt.getNewValue());
                         btnLogout.setEnabled(true);
                         btnLogin.setEnabled(true);
                         btnAnswer.setEnabled(false);
@@ -408,6 +444,14 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
                     state.setAction((Action) evt.getNewValue());
                     lblState.setText(state.getAction().toString());
                     if (((Action) evt.getNewValue()) == Action.LOGOUT) {
+                        List<ReasonCode> codes;
+                        if ((codes = getNotReadyReasonCode()) != null) {
+                            ReasonCodeDialog dialog = new ReasonCodeDialog(getLogoutReasonCode());
+                            dialog.setModal(true);
+                            ReasonCode reason = dialog.getReasonCode();
+                            sendChangeStateWithReasonCode((Action) evt.getNewValue(), reason.getId());
+                        } else
+                            sendChangeState((Action) evt.getNewValue());
                         thisForm.setTitle("FINESSE CONNECTOR");
                     } else {
                         thisForm.setTitle("FINESSE CONNECTOR (" + state.getLoginId() + "):" + environment.getProperty("server.port") + ": ext=" + state.getExtension());
@@ -480,6 +524,27 @@ public class FinesseForm extends JFrame implements CommandLineRunner {
 
         public void setToAddress(String toAddress) {
             this.toAddress = toAddress;
+        }
+    }
+
+
+    class ReasonCodeContainerImpl implements ReasonCodeContainer {
+        private final Map<Action, java.util.List<ReasonCode>> container = new HashMap<>();
+
+        private java.util.List<ReasonCode> find(Action action) {
+            return container.get(action);
+        }
+
+        public java.util.List<ReasonCode> getNotReadyReasonCode() {
+            return find(Action.NOT_READY);
+        }
+
+        public java.util.List<ReasonCode> getLogoutReasonCode() {
+            return find(Action.LOGOUT);
+        }
+
+        public void update(Action action, java.util.List<ReasonCode> codes) {
+            container.put(action, codes);
         }
     }
 }

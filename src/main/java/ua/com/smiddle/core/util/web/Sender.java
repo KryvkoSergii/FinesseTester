@@ -12,7 +12,8 @@ import ua.com.smiddle.core.util.util.FinesseForm;
 import ua.com.smiddle.core.util.util.JacksonUtil;
 import ua.com.smiddle.core.util.util.State;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -41,6 +42,11 @@ public class Sender {
 
     public void change_state(Object request) throws Exception {
         Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null, null);
+        makeRequest("/action", r);
+    }
+
+    public void change_state_with_reason_code(Object request,String reasonCodeId) throws Exception {
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null, null,reasonCodeId);
         makeRequest("/action", r);
     }
 

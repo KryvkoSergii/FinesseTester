@@ -1,6 +1,5 @@
 package ua.com.smiddle.core.util.model.interfaces;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -8,11 +7,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "ApiError")
 public class ApiError {
-    @XmlElement(name = "ErrorType")
+//    @XmlElement(name = "ErrorType")
     private String errorType;
-    @XmlElement(name = "ErrorMessage")
+//    @XmlElement(name = "ErrorMessage")
     private String errorMessage;
-    @XmlElement(name = "ErrorData")
+//    @XmlElement(name = "ErrorData")
     private String errorData;
 
 
