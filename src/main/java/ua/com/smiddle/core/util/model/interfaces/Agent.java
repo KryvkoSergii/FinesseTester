@@ -1,6 +1,7 @@
 package ua.com.smiddle.core.util.model.interfaces;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author ksa on 1/22/18.
@@ -43,7 +44,7 @@ public class Agent {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Agent{");
         sb.append("loginId='").append(loginId).append('\'');
-        sb.append(", reasonCode=").append(reasonCode != null ? reasonCode.toArray(new ReasonCode[reasonCode.size()]) : null);
+        sb.append(", reasonCode=").append(reasonCode != null ? reasonCode.stream().map(e->e.toString()).collect(Collectors.joining(",","[","]")): null);
         sb.append('}');
         return sb.toString();
     }

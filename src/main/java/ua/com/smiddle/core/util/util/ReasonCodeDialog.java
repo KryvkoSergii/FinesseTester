@@ -19,6 +19,7 @@ public class ReasonCodeDialog extends JDialog {
 
     public ReasonCodeDialog(final List<ReasonCode> codes) {
         setContentPane(contentPane);
+        setSize(250, 250);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
         this.codes = codes;
@@ -39,8 +40,8 @@ public class ReasonCodeDialog extends JDialog {
         list1.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-               int choice = e.getFirstIndex();
-               ReasonCodeDialog.this.choice = ReasonCodeDialog.this.codes.get(choice);
+                int choice = e.getFirstIndex();
+                ReasonCodeDialog.this.choice = ReasonCodeDialog.this.codes.get(choice);
             }
         });
 
@@ -74,8 +75,9 @@ public class ReasonCodeDialog extends JDialog {
         return this.choice;
     }
 
-    private void fillList(){
-        list1.setListData(codes.toArray());
+    private void fillList() {
+        if (codes != null)
+            list1.setListData(codes.toArray());
     }
 
 

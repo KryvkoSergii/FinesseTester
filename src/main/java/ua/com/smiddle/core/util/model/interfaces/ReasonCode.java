@@ -85,4 +85,17 @@ public class ReasonCode {
     private String calculateId() {
         return (uri != null && uri.contains(urlPref)) ? uri.substring(uri.indexOf(urlPref) + urlPref.length(), uri.length()) : null;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("uri='").append(uri).append('\'');
+        sb.append(", category=").append(category);
+        sb.append(", code='").append(code).append('\'');
+        sb.append(", label='").append(label).append('\'');
+        sb.append(", forAll=").append(forAll);
+        sb.append(", id='").append(id).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

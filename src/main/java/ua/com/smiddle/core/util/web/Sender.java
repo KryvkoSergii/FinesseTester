@@ -41,7 +41,7 @@ public class Sender {
     }
 
     public void change_state(Object request) throws Exception {
-        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, null, null);
+        Request r = new Request(state.getLoginId(), state.getExtension(), (Action) request, state.getPassword(), null, null, buildSubscriptionURL(), "json");
         makeRequest("/action", r);
     }
 

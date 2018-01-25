@@ -18,8 +18,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by srg on 21.09.16.
@@ -27,6 +31,7 @@ import java.util.List;
 @org.springframework.stereotype.Component("FinesseForm")
 @Scope("singleton")
 public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCodeContainer {
+    private Logger logger = Logger.getGlobal();
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH);
     FinesseForm thisForm;
     private PropertyChangeSupport stateHandler;
@@ -93,7 +98,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCode
 
         //== EVENT LISTENERS ===
         stateHandler = new PropertyChangeSupport(this);
-        stateHandler.addPropertyChangeListener(new EventListener());
+        stateHandler.addPropertyChangeListener(new FormEventListener());
 
         TESTButton.addActionListener(new ActionListener() {
             @Override
@@ -393,17 +398,32 @@ public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCode
     /**
      * слушатель, получающий события на отправку команд на изменение состояния
      */
-    public class EventListener implements PropertyChangeListener {
-        public EventListener() {
+    public class FormEventListener implements PropertyChangeListener {
+        public FormEventListener() {
             System.out.println(this.getClass().getName() + " started");
         }
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
+            logger.info(String.format("handle property change %s", evt));
             try {
                 if (evt.getPropertyName().equals("set_state")) {
                     if (evt.getNewValue() == Action.LOGOUT) {
-                        sendChangeState((Action) evt.getNewValue());
+                        logger.info(String.format("handle state %s", Action.LOGOUT.name()));
+                        List<ReasonCode> codes;
+                        if ((codes = getLogoutReasonCode()) != null) {
+                            logger.info(String.format("handle state %s with reason codes=%s", Action.LOGOUT.name(), codes.stream()
+                                    .map(e -> e.toString())
+                                    .collect(Collectors.joining(",", "[", "]"))));
+                            ReasonCodeDialog dialog = new ReasonCodeDialog(getLogoutReasonCode());
+                            dialog.setModal(true);
+                            dialog.setVisible(true);
+                            ReasonCode reason = dialog.getReasonCode();
+                            sendChangeStateWithReasonCode((Action) evt.getNewValue(), reason.getId());
+                        } else {
+                            logger.info(String.format("handle state %s without reason codes", Action.LOGOUT.name()));
+                            sendChangeState((Action) evt.getNewValue());
+                        }
                     } else if (evt.getNewValue() == Action.LOGIN) {
                         sendLOGIN();
                         btnLogout.setEnabled(true);
@@ -418,10 +438,15 @@ public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCode
                         btnTransfer.setEnabled(false);
                         btnConference.setEnabled(false);
                     } else if (evt.getNewValue() == Action.NOT_READY) {
+                        logger.info(String.format("handle state %s", Action.NOT_READY.name()));
                         List<ReasonCode> codes;
                         if ((codes = getNotReadyReasonCode()) != null) {
+                            logger.info(String.format("handle state %s with reason codes=%s", Action.LOGOUT.name(), codes.stream()
+                                    .map(e -> e.toString())
+                                    .collect(Collectors.joining(",", "[", "]"))));
                             ReasonCodeDialog dialog = new ReasonCodeDialog(getNotReadyReasonCode());
                             dialog.setModal(true);
+                            dialog.setVisible(true);
                             ReasonCode reason = dialog.getReasonCode();
                             sendChangeStateWithReasonCode((Action) evt.getNewValue(), reason.getId());
                         } else
@@ -444,14 +469,6 @@ public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCode
                     state.setAction((Action) evt.getNewValue());
                     lblState.setText(state.getAction().toString());
                     if (((Action) evt.getNewValue()) == Action.LOGOUT) {
-                        List<ReasonCode> codes;
-                        if ((codes = getNotReadyReasonCode()) != null) {
-                            ReasonCodeDialog dialog = new ReasonCodeDialog(getLogoutReasonCode());
-                            dialog.setModal(true);
-                            ReasonCode reason = dialog.getReasonCode();
-                            sendChangeStateWithReasonCode((Action) evt.getNewValue(), reason.getId());
-                        } else
-                            sendChangeState((Action) evt.getNewValue());
                         thisForm.setTitle("FINESSE CONNECTOR");
                     } else {
                         thisForm.setTitle("FINESSE CONNECTOR (" + state.getLoginId() + "):" + environment.getProperty("server.port") + ": ext=" + state.getExtension());
@@ -487,7 +504,7 @@ public class FinesseForm extends JFrame implements CommandLineRunner, ReasonCode
                     } else setAllButtonToEnable();
                 }
             } catch (Exception e) {
-                addException("EventListener throw EXCEPTION=" + e.getMessage());
+                addException("FormEventListener throw EXCEPTION=" + e.getMessage());
                 e.printStackTrace();
             }
         }
